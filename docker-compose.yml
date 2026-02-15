@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mudgame:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mudgame
+    ports:
+      - "4000:4000"   # Telnet
+      - "8080:8080"   # WebSocket
+      - "8000:8000"   # HTTP (开发环境)
+    volumes:
+      - ./mymud/data:/app/mymud/data
+    restart: unless-stopped
+    networks:
+      - mudnet
+    environment:
+      - TZ=Asia/Shanghai
+
+  nginx:
+    image: nginx:alpine
+    container_name: mudgame-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./mymud/www:/usr/share/nginx/html:ro
+      - ./ssl:/etc/nginx/ssl:ro  # SSL 证书目录（如果有）
+    depends_on:
+      - mudgame
+    restart: unless-stopped
+    networks:
+      - mudnet
+
+networks:
+  mudnet:
+    driver: bridge

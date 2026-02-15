@@ -1,0 +1,34 @@
+[Unit]
+Description=MUD Web Server
+After=network.target mud-driver.service
+
+[Service]
+Type=simple
+User=muduser
+Group=muduser
+WorkingDirectory=/opt/mudgame/mymud/www
+
+# 启动命令（绑定到本地，通过 Nginx 代理）
+ExecStart=/usr/bin/python3 -m http.server 8000 --bind 127.0.0.1
+
+# 重启策略
+Restart=always
+RestartSec=10
+
+# 资源限制
+LimitNOFILE=4096
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mud-web
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/mudgame/mymud/www
+
+[Install]
+WantedBy=multi-user.target

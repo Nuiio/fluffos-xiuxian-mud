@@ -1,0 +1,36 @@
+[Unit]
+Description=FluffOS MUD Game Driver
+Documentation=https://www.fluffos.info/
+After=network.target
+
+[Service]
+Type=simple
+User=muduser
+Group=muduser
+WorkingDirectory=/opt/mudgame/fluffos/build
+
+# 启动命令
+ExecStart=/opt/mudgame/fluffos/build/bin/driver /opt/mudgame/mymud/config.cfg
+
+# 重启策略
+Restart=always
+RestartSec=10
+
+# 资源限制
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mud-driver
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/mudgame/mymud/data
+
+[Install]
+WantedBy=multi-user.target
